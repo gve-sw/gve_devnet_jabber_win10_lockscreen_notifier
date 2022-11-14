@@ -1,0 +1,92 @@
+<html>
+<head>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+
+<script>
+
+function showNotification(caller_id)
+{
+    console.log("Passing caller ID: ", caller_id);
+    $.getJSON('/notify_call',
+                { call_id: caller_id });
+    return false;
+}
+
+function showNotificationDelayed(caller_id)
+{
+    console.log("Passing caller ID: ", caller_id);
+    setTimeout(function() { showNotification(caller_id); }, 5000);
+    return false;
+}
+
+function OnTelephonyConversationStateChanged(json) {
+
+	
+	var callerid = document.getElementById("callerid");
+	var state = document.getElementById("state");
+
+    var conversation = JSON.parse(json);
+    state.innerText = conversation.acceptanceState + "/" + conversation.state;
+
+    // Detect incoming call
+    if (conversation.acceptanceState == "Pending" && conversation.state == "Started") {
+        var callerIDs='';
+        // here we just concatenate any remote numbers into a string separated by space to show in notification
+        for (var i=0; i<conversation.remoteParticipants.length; i++) {
+            callerIDs+=conversation.remoteParticipants[i].translatedNumber+' ';
+        }
+	callerid.innerText=callerIDs;
+        showNotification(callerIDs);
+    }
+    
+}
+
+function OnLoadMethods()
+{
+    //OnTelephonyConversationStateChanged();
+
+}
+
+</script>
+
+    
+        <style>
+            .button {
+              background-color: #4CAF50;
+              border: none;
+              color: white;
+              padding: 15px 32px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              cursor: pointer;
+            }
+            </style>
+    <style type="text/css" id="5fd2de1d-e71c-4c59-9148-2e47d6dc5cd5"></style>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+
+</head>
+    <body onload="OnLoadMethods()">
+    Win10 lock screen notifier
+    <span>
+        <button class="button" onclick="showNotificationDelayed('555-1212')" alt="notify" type="button" title="notify">Notify
+        </button>
+    </span>
+<table class="table table-striped">
+  <thead>
+<tr>
+  <th scope="col">Status</th>
+  <th scope="col">Caller ID</th>                                                 
+</tr>
+  </thead>
+  <tbody>
+<tr>
+  <th id="state" scope="row"> --- </th>
+  <td id="callerid"> --- </td>
+</tr>
+  </tbody>
+</table>
+                        
+</body></html>
