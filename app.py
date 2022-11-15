@@ -24,7 +24,7 @@ or implied.
 #that you can specify that it´s notification settings can be changed to allow notifications
 # on a lock screen
 
-from win10toast import ToastNotifier
+from toastify import notify
 import time
 from flask import Flask, request, jsonify, render_template
 import sys, os
@@ -36,18 +36,18 @@ else:
     app = Flask(__name__)
 
 
+
 @app.route("/notify_call")
 def notify_call():
     call_id=request.args.get('call_id','')
-    toast = ToastNotifier()
     #time.sleep(5)
-    toast.show_toast(
-        "Jabber New Call",
-        "From: "+call_id,
-        duration =20,
-        icon_path="icon.ico",
-        threaded=True,
-    ) 
+    notify (
+        BodyText='From: '+call_id,
+        AppName='Jabber',
+        TitleText='Jabber New Call',
+        ImagePath='icon.ico'
+    )
+
     return jsonify(result="notified")
 
 @app.route("/")
